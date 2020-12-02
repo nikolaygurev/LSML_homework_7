@@ -8,19 +8,34 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
 
 class LinearRegressionTest extends AnyFlatSpec with should.Matchers with WithSpark {
+  val delta = 0.0001
+
+
   private def validateModel(model: LinearRegressionModel, data: DataFrame): Unit = {
     val dfTransformed = model.transform(df)
 
-    val evaluator = new RegressionEvaluator().setLabelCol("label").setPredictionCol("prediction").setMetricName("mse")
+    val evaluator = new RegressionEvaluator().setLabelCol("target").setPredictionCol("prediction").setMetricName("mse")
     val mse = evaluator.evaluate(dfTransformed)
 
-    mse should be < 0.0001
+    mse should be < delta
   }
 
 
-  "Model" should "correctly make good prediction" in {
+  "Model" should "make accurate predictions" in {
     val model = new LinearRegression().fit(df)
     validateModel(model, df)
+  }
+
+
+  "Estimator" should "learn weights correctly" in {
+    val model = new LinearRegression().fit(df)
+    val weights = model.weights.asBreeze.toDenseVector
+
+    weights(0) should be(1.0 +- delta) // feature_1
+    weights(1) should be(2.0 +- delta) // feature_2
+    weights(2) should be(-1.0 +- delta) // feature_3
+    weights(3) should be(-1.0 +- delta) // feature_4
+    weights(4) should be(0.0 +- delta) // intercept
   }
 
 

@@ -21,14 +21,14 @@ trait LinearRegressionParams extends PredictorParams with HasFeaturesCol with Ha
   val numEpochs: IntParam = new IntParam(this, "numEpochs", "numEpochs")
   val learningRate: DoubleParam = new DoubleParam(this, "learningRate", "learningRate")
 
-  setDefault(numEpochs, 100)
-  setDefault(learningRate, 1.0)
+  setDefault(numEpochs, 500)
+  setDefault(learningRate, 0.1)
 
   setDefault(featuresCol, "features")
-  setDefault(labelCol, "label")
+  setDefault(labelCol, "target")
   setDefault(predictionCol, "prediction")
 
-  def setnumEpochs(value: Int): this.type = set(numEpochs, value)
+  def setNumEpochs(value: Int): this.type = set(numEpochs, value)
 
   def setLearningRate(value: Double): this.type = set(learningRate, value)
 }
